@@ -116,7 +116,6 @@ test('bestMatch',()=> {
     bestOfMulti = Strategy.bestChoice(rules,items,MatchType.MultiRule);
     expect(13).toEqual(bestOfMulti.chosen().length);
     expect(-2400).toEqual(bestOfMulti.totalDiscount());
-    //_logMatchResult(bestOfMulti);
 });
 
 test('testSum',()=> {

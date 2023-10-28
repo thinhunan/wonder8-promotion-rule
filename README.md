@@ -1,6 +1,6 @@
 [中文说明](README_CN.md)
 #### overall
-As one of the most complex activities in the sales process, I have not found a good 'marketing promotion' infrastructure. So, the Wonder8.promotion engine comes.
+As one of the most complex activities in the sales process, Marketing Promotion hasn't a good infrastructure to deal. So, the Wonder8.promotion engine comes.
 
 ##### Features:
 
