@@ -276,22 +276,9 @@ test("4 discounting algorithm", () => {
 #### 策略！
 > Strategy.bestMatch(rules,items)/Strategy.bestOfOnlyOnceDiscount(rules, items) 均已废弃，统一使用bestChoice(rules, items, MatchType type, MatchGroup groupSetting)。
 ```java
-/**
-     * 找出一组商品和和一堆规则的最佳组合匹配，即多个规则合作下优惠力度最大的匹配结果
-     * @param rules {Rule[]} 一组规则
-     * @param items {Item[]} 一组商品
-     * @param type {MatchType}
-     *             MatchType.OneTime = 仅匹配一次规则
-     *             MatchType.OneRule = 匹配一个规则，但这个规则可以匹配多次
-     *             MatchType.MultiRule = 可以匹配多个规则，每个规则可以匹配多次
-     * @param groupSetting {MatchGroup}
-     *             MatchGroup.CrossedMatch = 分组计算，不同组的优惠可叠加，所有规则放在一起求最大优惠
-     *             MatchGroup.SequentialMatch = 分组计算，不同组的优惠可叠加，不同组的优惠按组计算后求最大叠加优惠
-     * @return {BestMatch}
-     */
-    public static BestMatch bestChoice(List<Rule> rules, List<Item> items, MatchType type, MatchGroup groupSetting) {
-        //... ...
-    }
+public static BestMatch bestChoice(List<Rule> rules, List<Item> items, MatchType type, MatchGroup groupSetting) {
+    //... ...
+}
 ```
 ```javascript
 test('bestMatch',()=> {
