@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   mode: 'development',
   entry: {
-    index: './src/deprecated/index.js',
+    index: './src/strategy.js',
   },
   devtool: 'inline-source-map',
  devServer: {
