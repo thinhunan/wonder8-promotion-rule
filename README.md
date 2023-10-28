@@ -1,87 +1,85 @@
-[中文说明](README_CN.md)
-#### overall
-As one of the most complex activities in the sales process, Marketing Promotion hasn't a good infrastructure to deal. So, the Wonder8.promotion engine comes.
+[English](README_EN.md)
+### 概述
+作为在销售环节变化最复杂之一的营销活动环节，我没有找到功能好用的基础设施，所以就有了Wonder8.promotion（旺德發.营销）。
 
-##### Features:
+#### 功能特性：
+* 支持针对用户选定的一批商品，从一堆营销规则中自动应用最大的优惠；
+* 可以同时应用多个规则，规则之间可以是与和或的关系，可以限定规则组合的优先级；
+* 可以对规则分组，限定先应用一组，再应用另一组；
+    * 可以限定必须应用完一组优惠才能计算下一组优惠；
+    * 也可以把各组优惠方式交叉对比最优组合；
+* 多种规则匹配方式求最佳优惠：
+    * 最优的只匹配一次规则；
+    * 最优的单规则多次匹配；
+    * 最优的多规则多次匹配；
+* 可以支持类似于买12瓶水可以合成两箱水（另一个SKU）,而两箱水又可以应用另一种规则；
+* 可以计算推荐用户再添加什么商品可以获得下一个优惠；
+* 同时提供服务端Java实现和客户端JS实现，便于下放优惠规则后，客户端实时得出优惠结果；
+* 基于专门设计的字符串表达式，各种变态组合玩法可以灵活直观表达，并且提供Builder和Interpreter为字符串和结构化对象间转换；
+* 代码结构清晰，进行功能扩展和各类规则组合场景扩展比较方便；
 
-- Support automatically applying the maximum discount from a bunch of marketing rules for a batch of products selected by the user;
-- Can apply multiple rules at the same time. The rules can be AND or OR, and the priority of rule combinations can be set;
-- Rules can be grouped. The first group is applied first, followed by the second group;
-  - It can be limited that the first group of discounts must be applied before calculating the next group of discounts;
-  - It can also compare the optimal combination of each group of discount methods;
-- Find the best discount with multiple rule matching methods:
-    - The best match only matches the rule once;
-    - The best single rule matches multiple times;
-    - The best multiple rules match multiple times;
-- It can support things like buying 12 bottles of water to combine into two boxes of water (another SKU), and two boxes of water can apply another rule;
-- It can calculate what products the user should add to get the next discount;
-- Provide both server-side Java implementation and client-side JS implementation, so that the client can get the discount results in real time after the discount rules are released;
-- Based on specially designed string expressions, various perverted combination gameplay can be flexibly and intuitively expressed, and Builder and Interpreter are provided to convert between strings and structured objects;
-- The code structure is clear, and it is more convenient to expand functions and expand various rule combination scenarios.
 
-### Function description
-All ideas come from the fact that a marketing discount rule can be abstracted into three parts:
-1. Scope of application of the rule (Range)
-   1. For the time being, we will express the scope as three layers: category, SPU, and SKU. Different scenarios can be extended. Since strings can be freely concatenated, it is generally not necessary to extend them in general cases. For example, a large category - a small category is equivalent to extending a layer;
-   2. One rule can apply to multiple scopes, that is, the scope can be a combination;
-2. Requirements of the rule (Predict &amp; Validate)
-   1. The requirements of the rule can be abstracted, mainly: the number required, the total value required, the number of types required, and the required bundling of certain items;
-   2. The calculation method (Predict) can be extended;
-3. Promotion plan (Promotion)
-   1. The promotion plan is often as follows: fixed deduction, deduction of a certain amount for every full amount, proportional discount, and direct deduction to a fixed value (one price)
-So a marketing rule is: [range].predict(expectedValue).
+### 功能说明
+所有想法源自于一个营销折扣的规则可以抽象成三个部分：
+1. 规则适用的范围(Range)
+    1. 我们暂且将范围表达成三层：类目、SPU、SKU，不同场景可以扩展，由于字符串可以自由串接，一般情况也不需要扩展，比如:大类目-小类目就相当于扩展了一层；
+    2. 一个规则可以有适用多个范围，即范围可以是一个组合；
+2. 规则的要求(Predict &amp; Validate)
+    1. 规则的要求可以抽象出来，主要是：要求有多少个，要求达到多少总价值，要求含有多少种，必须搭售某个商品等；
+    2. 计算方式（Predict）可以扩展；
+3. 优惠方案（Promotion）
+    1. 优惠方案往往是：固定减多少钱，每满多少钱减多少钱，按比例折扣，直接减到一个固定值（一口价）
+       所以一条营销规则就是：[range].predict(expectedValue)。
 
-#### Expression grammar
-Wonder8.promotion uses expressions to express and combine marketing rules. For example, to indicate that a group of items includes at least two of the three categories of food-fruit, food-meat, and food-vegetables, a 10% discount is applied: "[#cFOOD-FRUIT#cFOOD-MEAT#cFOOD-VEGETABLE].countCate(2)->-10%".
-1. A marketing rule consists of three parts: the scope of the rule, the method of calculating the rule, and the discount results applied by the rule:
-    1. [range].predict(expectedVaue) is the format of a rule
-2. If the user currently selects 10 items, but not all of them meet the scope of this rule, then it should not be counted. Therefore, the scope is the first setting:
-   1. In the [#cCate1#cCate2#……] notation, # is the beginning of the expression of a scope object, c is the type (optional c-category, p-SPU, k-SKU, can be extended), followed by the ID, [] can contain >=1 objects;
-   2. \$ represents all: \$.sum(20000); 
-   3. ~ represents the reuse of the scope of the previous rule: [#ccate01#ccate02#ccate03].countCate(2) &amp; ~.countSPU(5) &amp; \$.countSKU(5) &amp; ~.sum(10000)) means that in the category cate01, cate02, cate03, the item combination needs to meet the following requirements: 2 categories, 5 SPUs, 5 SKUs, and a total price of 10000. 
-3. .predict() represents the calculation method. Currently, it supports countCategory() to calculate the number of categories in the scope, countSPU() to calculate the number of SPUs in the scope, countSKU() to calculate the number of SKUs in the scope, count() to calculate the number of items, oneSKU() to calculate the number of a certain SKU, and sum() to calculate the total price. 
-4. expectedValue is an int number, which indicates that the calculation result must be >= this number to pass. 
-5. Rules can be combined, using &amp; to represent AND, | to represent OR, and rules can be grouped using (). For example, (rule1&amp;rule2&amp;rule3)|rule4, which means that 1, 2, and 3 must be achieved, or 4 is achieved, can pass the rule:
+#### 表达式语法
+Wonder8.promotion使用表达式来表达和组合营销规则，如表示当一组商品中包括食品-水果、食品-肉类、食品-蔬菜三大类中至少两个时，优惠10%："[#cFOOD-FRUIT#cFOOD-MEAT#cFOOD-VEGETABLE].countCate(2)->-10%"：
+1. 一条营销规则由三部分组成，规则适用的范围，规则计算的方法，规则应用的优惠结果：
+    1. [range].predict(expectedVaue)是一条规则的格式
+2. 用户当前选择了10个物品，但是并不是每一个物品都符合这条规则的范围，则它不应计算在内。所以适用范围是首要设置的：
+    1. [#cCate1#cCate2#……]表示法中，#是一个范围对象的表达开始，c是类型（可选c-类目，p-SPU，k-SKU，可以扩展），后面是ID，[]内可以放>=1个对象；
+    2. \$表示全部：\$.sum(20000)；
+    3. ~表示复用上一条规则的范围：[#ccate01#ccate02#ccate03].countCate(2) &amp; ~.countSPU(5) &amp; \$.countSKU(5) &amp; ~.sum(10000))，意味着在类目cate01,cate02,cate03这个范围内，物品组合需要满足类目涵盖2个，SPU涵盖5个，SKU涵盖5个，总价达到10000。
+3. .predict()表示计算的方法，当前支持countCategory()计算范围内含多少个类目，countSPU()计算范围内含多少个SPU，countSKU()计算范围内含多少个SKU，count（）计算多少个物品，oneSKU()计算某种SKU含多少个，sum()计算价格的合计。
+4. expectedValue是一个int数字，表示计算结果要>=这个数， 才能通过。
+5. 规则可以联合，用&amp;表示并且，用|表示或者，规则可以分组，用()，比如(rule1&amp;rule2&amp;rule3)|rule4，表示，1、2、3都要达成或者4达成，均可通过规则：
     ```javascript
     "([#pp01#pp02#pp03].countCate(2) & \$.countSPU(3) & \$.count(5) & \$.sum(10000)) | \$.sum(50000)"
    ```
-6. Each rule consists of a calculation part and a rule discount part, connected by ->;
-7. The syntax of the discount part is:
-   1. -1000 means a fixed discount of 10 yuan (so the calculation unit for money-related calculations is cents)
-   2. -1000/10000 means a discount of 10 yuan for every 100 yuan
-   3. -10% means a 10% discount, that is, a 90% discount. The addition of decimal points supports discounts such as -0.5%, which means a discount of 95.5%
-   4. 8000 means a fixed price of 80 yuan
-   5. -0 means a discount of 0 yuan, 0 means a discount to 0 yuan
+6. 每条规则由计算部分和一个规则优惠部分组成，中间用->连接；
+7. 优惠部分的语法是：
+    1. -1000 表示固定优惠10块钱（所以钱相关的计算单位是分）
+    2. -1000/10000 表示每100块钱优惠10块钱
+    3. -10% 表示优惠10%，即打9折，添加了小数点支持比如-0.5%表示优惠95.5%
+    4. 8000 表示一口价，80块钱
+    5. -0表示优惠0元，0表示优惠到0元
 
-#### Rule objects
-Corresponding to the expression, there is a system of structured objects:
-1. Rule -- corresponds to a complete marketing rule, the main properties are condition indicating the condition rule, and promotion indicating the discount rule
-    1. In actual use, because it is necessary to prompt users, display labels, etc., it is necessary to extend the Rule class to provide more additional attributes that are not related to calculation. See the RuleImpl class in the test cases.
-2. SimplexRule -- corresponds to a condition rule, the main properties are range indicating the scope of condition calculation, predict indicating the calculation method, and expcteed indicating the value to be achieved.
-3. SameRangeRule -- a rule with the same scope as the previous condition rule, using ~ to reuse the range expression of the previous rule.
-4. AndCompositeRule -- represents a group of condition rules with and logic. The main property is the components of the sub-rule set, which can be added by addRule(). The sub-rules can be Simplex/SameRange, or AndComposite/OrComposite.
-5. OrCompositeRule -- represents a group of condition rules with or logic. Others are the same as AndComposite.
-6. The condition of Rule can be Simplex/AndComposite/OrComposite, but not SameRange, otherwise where does SameRange reuse the range rule?
-7. Rule/Simplex/SameRange/AndComposite/OrComposite all have corresponding builders. You can find the shortcut to the builder through Builder.rule()/simplex()/and()/or(). See [Rule creation].
-8. The condition can be converted between strong typed instances and string expressions through the Rule.toString() method and Interprecter.parseString().
+#### 规则对象
+对应表达式，有一系统的结构化对象：
+1. Rule -- 对应一条完整的营销规则，主要属性是condition 表示条件规则，promotion表示优惠规则
+    1. 实际使用过程中，因为要对用户提示，显示标签等，所以需要扩展Rule类，提供更多与计算无关的附加属性，参见测试用例中的RuleImpl类。
+2. SimplexRule -- 对应一条条件规则，主要属性是range表示条件计算范围，predict表示计算方法，expcteted表示达标的值。
+3.  SameRangeRule -- 与前一条条件规则范围相同的规则，用~复用前述规则的范围表达式。
+4.  AndCompositeRule -- 表示and逻辑的条件规则组，主要属性是保存子规则集合的components，可以addRule()添加子规则，子规则可以是Simplex/SameRange，也可以是AndComposite/OrComposite。
+5.  OrCompositeRule -- 表示or逻辑的条件规则组，其它同AndComposite
+6.  Rule的condition可以是Simplex/AndComposite/OrComposite，不能是SameRange,不然SameRange去哪里复用范围规则
+7.  Rule/Simplex/SameRange/AndComposite/OrComposite都有对应的builder,通过Builder.rule()/simplex()/and()/or()可以找到builder的快捷入口。见[规则的创建]
+8.  条件可以通过Rule.toString()方法和Interprecter.parseString()来实现强类型实例与字符串表达式之间的互相转换。
 
-#### Rule creation
-The /model/builder/ directory contains a set of builders for creating rules in a structured way, with clear syntax.
+#### 规则的创建
+/model/builder/目录下有一整套builder用于以结构化的方式创建规则，语法清晰。
 ```java
 public class ConditionBuilderTest {
     @Test
     public void testBuildRule(){
-        /*
-          There are three ways to create rules:
-          1. Builder.rule().xxx().xxx().build();
-          2. new RuleBuilder().xxx().xxx().build();
-          3. Directly new Rule(), and complete the configuration through the constructor and properties.
-         */
-        RuleComponent rule1 = Builder.rule()//context is [Rule]
-                .simplex().addRangeAll()//context change to simplexRuleBuilder
+        //创建规则有三种方法：
+        //一种是Builder.rule().xxx().xxx().build()
+        //第二种是new RuleBuiler().xxx().xxx().build()
+        //第三种是直接new Rule()，通过contructor和properties来完成设置
+        RuleComponent rule1 = Builder.rule()//上下文是Rule
+                .simplex().addRangeAll()//注意这里上下文切换到了simplex条件的编写
                 .predict(P.SUM).expected(100)
-                .end() //end simplexRuleBuilder, context back to RuleBuilder
-                .endRule()//end RuleBuilder, context back to Builder, then can continue to build promotion part
+                .end() //通过.end()结束当前对象编写，返回到上一级，也就是Rule
+                .endRule()//因为.end()方法返回的是基类，所以需要.backRule()切换回RuleBuilder才能直接调用.promotion()这样特殊的方法，继续编写下去
                 .promotion("-10")
                 .build();
 
@@ -91,7 +89,10 @@ public class ConditionBuilderTest {
     @Test
     public void testBuildSimplexRule(){
         /*
-           In addition to Builder.rule() to start orchestrating a complete marketing rule, Builder also has Builder.simplex()/.or()/.and() to start orchestrating a single/OR combination/AND combination. But please note that in addition to .rule() which starts writing a complete marketing rule, other methods only start orchestrating the condition part of the rule. What is eventually .build() is one Rule and one Condition.
+          Builder除了能Builder.rule()来开始编排一个完整的营销规则，
+          也还有Builder.simplex()/.or()/.and()来开始编排一个单一/或组合/与组合
+          但请注意，除.rule()是开始编写一个完整的营销规则，其它方法只是在开始编排规则中的条件部分
+          最终.build()出来的一个是Rule，一个是Condition
         */
         SimplexRule rule1 = Builder.simplex() // same as => new SimplexRuleBuilder()
                 .addRangeAll()
@@ -131,10 +132,10 @@ public class ConditionBuilderTest {
     }
 }
 ```
-For specific usage, please refer to ConditionBuilderTest.java and RuleTest.java under test.
+具体用法可以参见test下的ConditionBuilderTest.java和RuleTest.java。
 
-#### Expression Parsing
-The Interpreter class implements interpretation of rule strings, which can convert strings into model structures, Interprecter.parseString(ruleString)
+#### 表达式的解析
+Interprecter类实现对规则字符串的解释，可以将字符串转化成模型结构，Interprecter.parseString(ruleString)
 ```java
 public class InterpreterTest {
 
@@ -201,27 +202,27 @@ public class InterpreterTest {
 }
 ```
 
-#### Rule Matching
+#### 规则是否匹配
 Rule.check(items);
 
-#### Rule Matching Result
-Rule.validate(tickets) -> RuleValidateResult object
+#### 规则匹配结果详情
+Rule.validate(tickets) -> RuleValidateResult对象
 result.valid = result.expected vs. result.actual
 
-#### Discount Calculation
-Rule.discount(items) -> int. It returns a negative value, which is the discount amount. Note that for the all-in price rules, the discount amount is also calculated by subtracting the current total ticket price from the target price. For example, if the current total selected ticket price is 10,000, and the all-in price rule is 8,000, then it returns -2,000.
+#### 优惠计算
+Rule.discount(items) -> int. 返回一个负值，即优惠的数，注意一口价的规则，也是目标价格减去当前票价总和得出的优惠掉的值，比如当前所选票价总和是10000，一口价规则是8000，则返回-2000
 > result.isValid()?r.discount(selectedTickets):0
 
-##### Four discount calculation scopes
-There are four discount calculation scopes:
-Assume there are a total of 9 items, 2 of item 01 priced at 100, 6 of item 02 priced at 121.2, 1 of item 03 priced at 0.5. The rule requires a total of 6 for item 01 and 02, and both must have:
-1. The strategy of Strategy.bestMatch() is to achieve the most discounts under the lowest cost. If the promotion is a percentage or amount discount, it will take the higher price tickets, otherwise the lower price ones. In the example above, the result is 1 ticket of 01 and 5 of 02;
-    1. If rule A's promotion is a percentage or amount discount, it will also calculate whether matching more tickets to A will bring more discounts.
-2. The strategy of Strategy.bestOfOnlyOnceDiscount() is to only allow using a discount rule once, so it calculates the minimum number of tickets needed to meet the rule requirement, but selects the highest price tickets. In the example above, the result is 1 ticket of 01 and 5 of 02;
-   1. If rule A's promotion is a percentage or amount discount, it will also calculate whether matching more tickets to A will bring more discounts.
-3. Rule.discount() will apply the discount to all tickets. In the example above, the result is all 9 tickets.
-4. Rule.discountFilteredItems() will calculate discounts for all tickets within the scope specified in the rule. In the example above, the result is 2 tickets of 01 and 6 of 02, excluding 03.
-Note that the Strategy supports multiple matchings and applications of a single rule and multiple rules combined. This is more in line with the concept of "optimal".
+##### 四种计算范围
+优惠计算有四种计算范围：
+假设总共9个物品，01号100块的2个，02号121.2块的6个，03号0.5块的1个，规则是01，02号总共要6个，并且两种都要有：
+1. Strategy.bestMatch()的策略是求最低成本下达成最多优惠，如果是比率折扣，它会取高价票，否则取低价票，上例结果是计算1张01和5张02；
+    1. 如果规则A的promotion是满折满减(%,/)，则会同时计算将更多票匹配到A是否会带来更多的优惠
+2. Strategy.bestOfOnlyOnceDiscount()的策略是只允许使用一次优惠规则，所以计算达成规则所需的最少张数，但是是最高价格的票，上例结果是计算1张01和5张02；
+    1. 如果规则A的promotion是满折满减(%,/)，则会同时计算将更多票匹配到A是否会带来更多的优惠
+3. Rule.discount()，会对所有票应用优惠，上例结果是计算所有9张票；
+4. Rule.discountFilteredItems()，会对规则指定范围内的所有票计算优惠，上例结果是计算2张01和6张02，不含03；
+   注意，Strategy支持单规则多次匹配应用和多条规则联合多次应用，更符合“最优”的概念。
 ```javascript
 test("4 discounting algorithm", () => {
 
@@ -240,33 +241,33 @@ test("4 discounting algorithm", () => {
 
     const rule = Interpreter.parseString(ruleString);
     let expected = 0, actual = 0;
-    // In order to perform calculations for rule recommendations, in the rule's own discount calculation method,
-    // there is no judgment on whether the rule has been met, so check() needs to be called before invoking.
+    //为了做规则推荐的运算，规则本身算折扣的方法里，
+    // 并没有判定规则是否已达成，所以调用前需做check()
     if(rule.check(items)){
-        // 1st approach, rule.discountFilteredItems(items)
-        // Calculates the discount for the products within the rule's scope
+        //第1种，rule.discountFilteredItems(items)
+        //计算的是规则范围内的这部分商品的折扣
         expected = rule.filterItem(items).map(t=>t.price).reduce((p1,p2)=>p1+p2,0) * -0.5;
         actual = rule.discountFilteredItems(items);
         console.log(expected, actual)
         expect(actual).toEqual(expected);
 
-        // 2nd approach, rule.discount(items)
-        // Calculates the discount applied to all products
+        //第2种，rule.discount(items)
+        //计算的是所有商品应用折扣
         expected = items.map(t=>t.price).reduce((p1,p2)=>p1+p2,0) * -0.5;
         actual = rule.discount(items);
         console.log(expected, actual)
         expect(actual).toEqual(expected);
     }
 
-    // 3rd approach, Strategy.bestMath()
-    // Calculates the products needed to meet the rule matching at the lowest cost
+    //第3种，Strategy.bestMath()
+    //计算的是用最低成本达成规则匹配所需要的商品
     expected = (items[0].price * 2 + items[2].price *6 ) * -0.5;
     actual = Strategy.bestMatch([rule],items).totalDiscount();
     console.log(expected, actual)
     expect(actual).toEqual(expected);
 
-    // 4th approach, Strategy.bestOfOnlyOnceDiscount()
-    // Calculates the minimum number of products needed to meet the rule, but selects the highest priced products
+    //第4种，Strategy.bestOfOnlyOnceDiscount()
+    //计算达成规则所需的最少张数，但是是最高价格的商品
     expected = (items[0].price * 2 + items[2].price * 6 ) * -0.5;
     const match = Strategy.bestOfOnlyOnceDiscount([rule],items)
     actual = match.totalDiscount();
@@ -275,8 +276,8 @@ test("4 discounting algorithm", () => {
     console.log(match.more);
 });
 ```
-#### Strategy！
-> Strategy.bestMatch(rules,items)/Strategy.bestOfOnlyOnceDiscount(rules, items) are deprecated, use bestChoice(rules, items, MatchType type, MatchGroup groupSetting)。
+#### 策略！
+> Strategy.bestMatch(rules,items)/Strategy.bestOfOnlyOnceDiscount(rules, items) 均已废弃，统一使用bestChoice(rules, items, MatchType type, MatchGroup groupSetting)。
 ```java
 public static BestMatch bestChoice(List<Rule> rules, List<Item> items, MatchType type, MatchGroup groupSetting) {
     //... ...
@@ -359,29 +360,31 @@ test('bestMatch',()=> {
 });
 ```
 
-##### Item Bundling
-In marketing campaigns, there is a scenario where purchasing a certain quantity of item A converts it into another SKU. For example, buying 12 bottles of water converts to buying 1 case of water, or buying several SKUs combines into another SKU, such as buying a top plus a bottom converts to buying a set. In this case, if the rule engine can automatically complete the bundling, it will save the application layer a lot of code when creating combination rules. Therefore, a promotion syntax is provided to implement this functionality:
+##### 商品组合
+营销活动中存在购买一定数量A物品，就转换成另一个SKU，比如买12瓶水会变成买一箱水，或者买几个SKU合成另一个SKU，比如买一件上装加一件下装变成一个套装，这个时候如果规则引擎能自动完成合并，那么在组合规则时会少去应用层很多代码，所以提供了一个实现这一功能的promotion语法：
 > y:{new SKU}:{new SKU price}
 
-The following rule indicates that three adjacent seats in rows 1 and 2 of VIP zone A can be combined into a VIP package ticket sold at 300,000
+
+以下规则表示VIP A区的1，2排三个相邻座可以合并成一个VIP套票，卖300000
 >
 > [#zVIP:A:1:1-VIP:A:2:10].adjacentSeat(3)->y:VipPackage3:300000
 
-##### Rule Grouping
-1. Rules can be calculated in groups. Rules in group 1 can be stacked on top of the results of rules applied in group 0, and so on.
-2. Rules in each group can be calculated and stacked sequentially, then the optimal result is taken, which is MatchGroup.SequentialMath.
-3. Rules in each group can be intertwined and calculated together, taking all possible optimal results, which is MatchGroup.CrossedMatch.
-4. Adding @0 after a rule string indicates the rule is in group 0, @1 indicates group 1.
+
+##### 规则分组
+1. 规则可以分组计算，组别为1的规则可以叠加在组别为0的规则应用的结果上，依此类推
+2. 各组规则可以按组依次计算、叠加，再取最优，即MatchGroup.SequentialMath
+3. 各组规则可以交织在一起计算、叠加，取所有可能的最优，即MatchGroup.CrossedMatch
+4. 规则字符串后加@0，表示规则为第0组，@1表示为第1组
 ```javascript
 //以下例子应用了扩展场景-剧院座位，多了一个座位的属性，多张邻座票可以组合成一个联票，形成联票后又可以应用联票的优惠规则
 
 function getSeatedItems () {
     return [
-        new Item("01", "01", "02", 10000, "Floor2:A:1:1"),
-        new Item("01", "01", "02", 10000, "Floor2:A:1:3"),
-        new Item("01", "01", "02", 10000, "Floor2:A:1:2"),
-        new Item("01", "01", "02", 10000, "Floor2:A:1:5"),
-        new Item("01", "01", "02", 10000, "Floor2:A:1:4"),
+        new Item("01", "01", "02", 10000, "二楼:A:1:1"),
+        new Item("01", "01", "02", 10000, "二楼:A:1:3"),
+        new Item("01", "01", "02", 10000, "二楼:A:1:2"),
+        new Item("01", "01", "02", 10000, "二楼:A:1:5"),
+        new Item("01", "01", "02", 10000, "二楼:A:1:4"),
         new Item("02", "02", "03", 121200, "VIP:A:1:4"),
         new Item("02", "02", "03", 121200, "VIP:A:1:2"),
         new Item("02", "02", "03", 121200, "VIP:A:1:3"),
@@ -403,9 +406,9 @@ test('testPackage',()=>{
 
 test('testMatchGroup',()=>{
     let seatedItems = getSeatedItems();
-    //Floor2:A:1:1-5
+    //二楼:A:1:1-5
     //rule1 -2000 rule2 -1800 rule1+rule2 -3800 rule3 -4000
-    const rule1 = Interpreter.parseString("[#zFloor2:A:1:1-Floor2:A:1:5].adjacentSeat(2)->y:APackage2:18000");
+    const rule1 = Interpreter.parseString("[#z二楼:A:1:1-二楼:A:1:5].adjacentSeat(2)->y:APackage2:18000");
     rule1.group=0;
     const rule2 = Interpreter.parseString("[#kAPackage2].count(1)->-10%@1");
     const rule3 = Interpreter.parseString("[#k02].count(3)->-4000@1");
@@ -424,33 +427,33 @@ test('testMatchGroup',()=>{
 });
 
 ```
-You can see under the MatchGroup.SequentialMatch mode, it first tried to find 2 package tickets using the rules in group 0, then applied a 90% ticket discount respectively to each package ticket;
-Under the MatchGroup.CrossedMatch mode, through calculation, 3 tickets minus 4,000 is more cost effective than 2 tickets making up 1 package ticket then applying 90% discount minus 3,800. Therefore, the final result is 3 tickets minus 4,000, plus 2 tickets making up 1 package ticket then 90% discount minus 3,800.
+可以看到MatchGroup.SequntialMatch模式下，先用0组规则尽量找到了2组套票，然后分别为每张套票应用了一个9折的票面优惠；
+在MatchGroup.CrossedMatch模式下，通过计算，3张票减4000比两张票组成1个套票再应用9折减3800要更优惠，所以最终是3张票-4000，再加上两张票形成一个套票再9折-3800
 
-### Extensibility
-The modules of the rule engine are very clear. Facing different tasks, small adjustments can be made within a relatively clear scope and bring global benefits:
-- The Range related sections are used to express the matching scope of rules. If there are needs in this aspect, only this part should be changed, for example "The IDs are too long, hope sub-rules with the same scope can reuse the range configuration to reduce rule string length", then we can simply add a new type of Range called SameRange.
-- Predict predicates are judgement actions. Adding a new judgement action only requires expanding this part of the code.
-- Rule and RuleComponent are the strongly typed expressions of the rules themselves. In addition to expressing rule data, they also undertake:
-    - Rule matching
-    - Discount calculation
-    - Filtering tickets within matching scope
-- Strategy and the Match classes are used to automatically optimize among multiple rules and tickets, generally won't need to be changed.
-- Interpreter is the string parser. Its workflow generally won't need to change, including breaking down rule combinations and interpreting individual rules.
-- Builder is a set of fluent chained creation of various rules and components to assist development.
+### 功能扩展
+规则引擎的模块非常清楚，面对不同的任务，可以在相对明确的范围做少量调整，并带来全局的收益：
+- Range相关的部分是用来表达规则的匹配范围，如果有这方面的需求，应该只改动这一部分，比如“ID都太长了，希望相同范围的子规则可以复用范围设置，减少规则字符串长度”，则我们增加一种Range:SameRange表达即可；
+- Predict谓词是判断动作，新增了一种判断动作，只需要扩展这部分代码即可；
+- Rule、RuleComponent是规则本身的强类型表达，除了规则数据的表达，它们还承担：
+    - 规则匹配
+    - 折扣计算
+    - 匹配范围的票的筛选
+- Strategy和一套Match类是用来做多个规则和多张票的自动优选的，一般不会动到；
+- Interpreter是字符串解析器，基本它的流程不会需要改动，对规则组合的分解，对单一规则的解释；
+- Builder是一套强类型链式创建各种规则的辅助体系。
 
-#### Extending the oneSKU Predicate
-Let's look at how to extend a oneSKU predicate to implement the judgment that at least one single SKU must reach a certain quantity.
+#### 扩展oneSKU谓词
+我们看一下如何扩展一个oneSKU谓词来实现至少有一单个SKU必须要达到多少数量的判断。
 ##### java
 - P.java
 ```java
-//predict 
+//predict 判断动词
 public enum P {
     
     //... ...
 
     /**
-     * Number of a SKU
+     * 某种SKU的数量
      */
     ONE_SKU;
 
@@ -473,6 +476,7 @@ public enum P {
 - validator.java
 ```java
 public class Validator {
+    //@1 有新的玩法只需在这里加谓词和对应的含义
     private static HashMap<P, Function<Stream<Ticket>, Integer>> validators
             = new HashMap<P, Function<Stream<Ticket>, Integer>>(){
         {
@@ -527,35 +531,33 @@ const P = Object.freeze({
 });
 //... ...
 ```
-See usage in unit test strategyTest's test_oneSKU().
+用法见单元测试中的strategyTest中的test_oneSKU()
 
-### Scenario Extension
-Different scenarios will have personalized needs. The source code has already implemented the demo scenario (ticket has the key attribute of seat), you can refer to:
-1. Range supports z to represent seat
-2. Predict adds adjancetSeat to judge if the tickets are adjacent seats in an item combination
-3. Use TicketSeatComparator to encapsulate logic to determine seat location relationships based on seat information
+### 场景扩展
+不同的场景会有个性化的需求，源码中已经实现了对演示场景（票多了座位这一半键属性），可以参考：
+1. Range支持z表示座位
+2. Predict增加adjancetSeat判断商品组合中票是不是连座的
+3. 用TicketSeatComparator封装根据座位信息判断不同座位位置关系的逻辑
 
-### Code structure
-｜- /java -- backend java implementation
+### 代码结构
+｜- /java -- 后端实现，暂时不考虑翻译golang/.net语言版本，电商还是java多
 
-｜- /java/.../Builder.java -- fluent chained creation of various rules and components
+｜- /java/.../Builder.java -- 表达式构造器入口 !important
 
-｜- /java/.../Interpreter.java -- string parser, parse rule string into model structure
+｜- /java/.../Interpreter.java -- 表达式字符串解析器 !important
 
-｜- /java/.../Strategy.java -- automatic calculation among multiple rules and items
+｜- /java/.../Strategy.java -- 计算方法入口 !important
 
-｜- /java/.../model -- model classes
+｜- /java/.../model -- 规则结构化类体系
 
-｜- /java/.../model/builder -- builders for creating rules in a structured way
+｜- /java/.../model/builder -- 构造器的处理类
 
-｜- /java/.../model/comparator -- comparators for sorting items
+｜- /java/.../model/comparator -- Item比较逻辑
 
-｜- /java/.../model/strategy -- automatic calculation among multiple rules and items
+｜- /java/.../model/strategy -- 规则计算逻辑 !important
 
-｜- /java/.../model/validate -- results for checking if items meet the rule
+｜- /java/.../model/validate -- 规则验证结果类
 
-｜- /js -- frontend javascript implementation, structures and functions are similar to java
+｜- /js -- 前端javascript实现，代码结构与功能与后端完全一致，暂时不考虑翻译成typescript了
 ### License
-[GPL](LICENSE.txt)
-
-
+[GPL](LICENSE.CN.txt)
