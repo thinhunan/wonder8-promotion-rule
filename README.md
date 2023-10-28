@@ -41,7 +41,10 @@ Wonder8.promotion uses expressions to express and combine marketing rules. For e
    3. ~ represents the reuse of the scope of the previous rule: [#ccate01#ccate02#ccate03].countCate(2) &amp; ~.countSPU(5) &amp; \$.countSKU(5) &amp; ~.sum(10000)) means that in the category cate01, cate02, cate03, the item combination needs to meet the following requirements: 2 categories, 5 SPUs, 5 SKUs, and a total price of 10000. 
 3. .predict() represents the calculation method. Currently, it supports countCategory() to calculate the number of categories in the scope, countSPU() to calculate the number of SPUs in the scope, countSKU() to calculate the number of SKUs in the scope, count() to calculate the number of items, oneSKU() to calculate the number of a certain SKU, and sum() to calculate the total price. 
 4. expectedValue is an int number, which indicates that the calculation result must be >= this number to pass. 
-5. Rules can be combined, using &amp; to represent AND, | to represent OR, and rules can be grouped using (). For example, (rule1&amp;rule2&amp;rule3)|rule4, which means that 1, 2, and 3 must be achieved, or 4 is achieved, can pass the rule: ([#pp01#pp02#pp03].countCate(2) &amp; \$.countSPU(3) &amp; \$.count(5) &amp; \$.sum(10000)) | \$.sum(50000).
+5. Rules can be combined, using &amp; to represent AND, | to represent OR, and rules can be grouped using (). For example, (rule1&amp;rule2&amp;rule3)|rule4, which means that 1, 2, and 3 must be achieved, or 4 is achieved, can pass the rule:
+    ```javascript
+    "([#pp01#pp02#pp03].countCate(2) & \$.countSPU(3) & \$.count(5) & \$.sum(10000)) | \$.sum(50000)"
+   ```
 6. Each rule consists of a calculation part and a rule discount part, connected by ->;
 7. The syntax of the discount part is:
    1. -1000 means a fixed discount of 10 yuan (so the calculation unit for money-related calculations is cents)

@@ -41,7 +41,10 @@ Wonder8.promotion使用表达式来表达和组合营销规则，如表示当一
    3. ~表示复用上一条规则的范围：[#ccate01#ccate02#ccate03].countCate(2) &amp; ~.countSPU(5) &amp; \$.countSKU(5) &amp; ~.sum(10000))，意味着在类目cate01,cate02,cate03这个范围内，物品组合需要满足类目涵盖2个，SPU涵盖5个，SKU涵盖5个，总价达到10000。
 3. .predict()表示计算的方法，当前支持countCategory()计算范围内含多少个类目，countSPU()计算范围内含多少个SPU，countSKU()计算范围内含多少个SKU，count（）计算多少个物品，oneSKU()计算某种SKU含多少个，sum()计算价格的合计。
 4. expectedValue是一个int数字，表示计算结果要>=这个数， 才能通过。
-5. 规则可以联合，用&amp;表示并且，用|表示或者，规则可以分组，用()，比如(rule1&amp;rule2&amp;rule3)|rule4，表示，1、2、3都要达成或者4达成，均可通过规则：([#pp01#pp02#pp03].countCate(2) &amp; \$.countSPU(3) &amp; \$.count(5) &amp; \$.sum(10000))|\$.sum(50000)。
+5. 规则可以联合，用&amp;表示并且，用|表示或者，规则可以分组，用()，比如(rule1&amp;rule2&amp;rule3)|rule4，表示，1、2、3都要达成或者4达成，均可通过规则：
+    ```javascript
+    "([#pp01#pp02#pp03].countCate(2) & \$.countSPU(3) & \$.count(5) & \$.sum(10000)) | \$.sum(50000)"
+   ```
 6. 每条规则由计算部分和一个规则优惠部分组成，中间用->连接；
 7. 优惠部分的语法是：
    1. -1000 表示固定优惠10块钱（所以钱相关的计算单位是分）
@@ -538,13 +541,21 @@ const P = Object.freeze({
    
 ### 代码结构
 ｜- /java -- 后端实现，暂时不考虑翻译golang/.net语言版本，电商还是java多
+
 ｜- /java/.../Builder.java -- 表达式构造器入口 !important
+
 ｜- /java/.../Interpreter.java -- 表达式字符串解析器 !important
+
 ｜- /java/.../Strategy.java -- 计算方法入口 !important
+
 ｜- /java/.../model -- 规则结构化类体系
+
 ｜- /java/.../model/builder -- 构造器的处理类
+
 ｜- /java/.../model/comparator -- Item比较逻辑
+
 ｜- /java/.../model/strategy -- 规则计算逻辑 !important
+
 ｜- /java/.../model/validate -- 规则验证结果类
 
 ｜- /js -- 前端javascript实现，代码结构与功能与后端完全一致，暂时不考虑翻译成typescript了
