@@ -1,0 +1,24 @@
+{
+  "name": "mtc_promotion_expression",
+  "version": "1.0.0",
+  "description": "- V1.0使用说明： [营销规则引擎](https://y7bm5epe2b.feishu.cn/wiki/wikcn0hLNlYTupunzN0yeN8EVMg#) - src/deprecated/ 这个目录是最初的构思版本，没有完整的结构化对象，已废弃。   - 最初版本使用webpack+html-webpack-plugin来直接运行于node，通过浏览器访问来调试和测试。 - 新版本使用jest来进行单元测试，不再依赖webpack，   - 但是依赖于babel+@babel/plugin-transform-modules-commonjs，   - 测试脚本位于src/__tests__/目录",
+  "main": "deprecated/index.js",
+  "scripts": {
+    "dev": "webpack serve --open",
+    "start": "webpack serve --open",
+    "test": "jest",
+    "test-c": "jest --coverage"
+  },
+  "author": "tanzhenlin",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.17.5",
+    "@babel/preset-env": "^7.16.11",
+    "babel-jest": "^27.5.1"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.16.8",
+    "jest": "^27.5.1"
+  },
+  "keywords": []
+}

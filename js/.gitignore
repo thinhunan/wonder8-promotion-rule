@@ -1,0 +1,14 @@
+# Editor directories and files
+.idea
+target
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.iml
+.flattened-pom.xml
+/node_modules/
+.DS_Store
+*/.DS_Store
+/coverage/
