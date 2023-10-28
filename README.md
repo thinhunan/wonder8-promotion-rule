@@ -137,33 +137,33 @@ public class InterpreterTest {
 
     @Test
     public void validateCondition() {
-        String ruleStr = "(\$.count(5)&[#cCATEGORY1#cCATEGORY2].sum(10)&~.countSPU(2))|\$.sum(100)";
+        String ruleStr = "($.count(5)&[#cCATEGORY1#cCATEGORY2].sum(10)&~.countSPU(2))|$.sum(100)";
         assertTrue(Interpreter.validateCondition(ruleStr));
     }
 
     @Test
     public void parseString() {
-        String ruleStr = "(\$.count(5)&[#cCATEGORY1#cCATEGORY2].sum(10)&~.countSPU(2))|\$.sum(100)";
+        String ruleStr = "($.count(5)&[#cCATEGORY1#cCATEGORY2].sum(10)&~.countSPU(2))|$.sum(100)";
         RuleComponent rule = Interpreter.parseString(ruleStr);
         System.out.println(rule);
         assertEquals(ruleStr,rule.toString());
 
-        ruleStr = "(\$.count(5)|([#cCATEGORY1#cCATEGORY2].sum(10)&~.countSPU(2)))|\$.sum(100)";
+        ruleStr = "($.count(5)|([#cCATEGORY1#cCATEGORY2].sum(10)&~.countSPU(2)))|$.sum(100)";
         rule = Interpreter.parseString(ruleStr);
         System.out.println(rule);
         assertEquals(ruleStr,rule.toString());
 
-        ruleStr = "((\$.count(5)&[#cCATEGORY1#cCATEGORY2].sum(10))|([#cCATEGORY1#cCATEGORY2].sum(10)&~.countSPU(2)))|\$.sum(100)";
+        ruleStr = "(($.count(5)&[#cCATEGORY1#cCATEGORY2].sum(10))|([#cCATEGORY1#cCATEGORY2].sum(10)&~.countSPU(2)))|$.sum(100)";
         rule = Interpreter.parseString(ruleStr);
         System.out.println(rule);
         assertEquals(ruleStr,rule.toString());
 
-        ruleStr = "((\$.count(5)&[#cCATEGORY1#cCATEGORY2].sum(10))|[#cCATEGORY1#cCATEGORY2].sum(10))|\$.sum(100)";
+        ruleStr = "(($.count(5)&[#cCATEGORY1#cCATEGORY2].sum(10))|[#cCATEGORY1#cCATEGORY2].sum(10))|$.sum(100)";
         rule = Interpreter.parseString(ruleStr);
         System.out.println(rule);
         assertEquals(ruleStr,rule.toString());
 
-        ruleStr = "((\$.count(5)&[#cCATEGORY1#cCATEGORY2].sum(10))|[#cCATEGORY1#cCATEGORY2].sum(10))|(\$.sum(100)&~.countCate(2))";
+        ruleStr = "(($.count(5)&[#cCATEGORY1#cCATEGORY2].sum(10))|[#cCATEGORY1#cCATEGORY2].sum(10))|($.sum(100)&~.countCate(2))";
         rule = Interpreter.parseString(ruleStr);
         System.out.println(rule);
         assertEquals(ruleStr,rule.toString());
@@ -534,13 +534,21 @@ Different scenarios will have personalized needs. The source code has already im
 
 ### Code structure
 ｜- /java -- backend java implementation
+
 ｜- /java/.../Builder.java -- fluent chained creation of various rules and components
+
 ｜- /java/.../Interpreter.java -- string parser, parse rule string into model structure
+
 ｜- /java/.../Strategy.java -- automatic calculation among multiple rules and items
+
 ｜- /java/.../model -- model classes
+
 ｜- /java/.../model/builder -- builders for creating rules in a structured way
+
 ｜- /java/.../model/comparator -- comparators for sorting items
+
 ｜- /java/.../model/strategy -- automatic calculation among multiple rules and items
+
 ｜- /java/.../model/validate -- results for checking if items meet the rule
 
 ｜- /js -- frontend javascript implementation, structures and functions are similar to java
