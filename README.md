@@ -24,7 +24,7 @@ All ideas come from the fact that a marketing discount rule can be abstracted in
 1. Scope of application of the rule (Range)
    1. For the time being, we will express the scope as three layers: category, SPU, and SKU. Different scenarios can be extended. Since strings can be freely concatenated, it is generally not necessary to extend them in general cases. For example, a large category - a small category is equivalent to extending a layer;
    2. One rule can apply to multiple scopes, that is, the scope can be a combination;
-2. Requirements of the rule (Predict & Validate)
+2. Requirements of the rule (Predict &amp; Validate)
    1. The requirements of the rule can be abstracted, mainly: the number required, the total value required, the number of types required, and the required bundling of certain items;
    2. The calculation method (Predict) can be extended;
 3. Promotion plan (Promotion)
@@ -38,10 +38,10 @@ Wonder8.promotion uses expressions to express and combine marketing rules. For e
 2. If the user currently selects 10 items, but not all of them meet the scope of this rule, then it should not be counted. Therefore, the scope is the first setting:
    1. In the [#cCate1#cCate2#……] notation, # is the beginning of the expression of a scope object, c is the type (optional c-category, p-SPU, k-SKU, can be extended), followed by the ID, [] can contain >=1 objects;
    2. \$ represents all: \$.sum(20000); 
-   3. ~ represents the reuse of the scope of the previous rule: [#ccate01#ccate02#ccate03].countCate(2) & ~.countSPU(5) & \$.countSKU(5) & ~.sum(10000)) means that in the category cate01, cate02, cate03, the item combination needs to meet the following requirements: 2 categories, 5 SPUs, 5 SKUs, and a total price of 10000. 
+   3. ~ represents the reuse of the scope of the previous rule: [#ccate01#ccate02#ccate03].countCate(2) &amp; ~.countSPU(5) &amp; \$.countSKU(5) &amp; ~.sum(10000)) means that in the category cate01, cate02, cate03, the item combination needs to meet the following requirements: 2 categories, 5 SPUs, 5 SKUs, and a total price of 10000. 
 3. .predict() represents the calculation method. Currently, it supports countCategory() to calculate the number of categories in the scope, countSPU() to calculate the number of SPUs in the scope, countSKU() to calculate the number of SKUs in the scope, count() to calculate the number of items, oneSKU() to calculate the number of a certain SKU, and sum() to calculate the total price. 
 4. expectedValue is an int number, which indicates that the calculation result must be >= this number to pass. 
-5. Rules can be combined, using & to represent AND, | to represent OR, and rules can be grouped using (). For example, (rule1&rule2&rule3)|rule4, which means that 1, 2, and 3 must be achieved, or 4 is achieved, can pass the rule: ([#pp01#pp02#pp03].countCate(2) &amp; \$.countSPU(3) &amp; \$.count(5) &amp; \$.sum(10000)) | \$.sum(50000).
+5. Rules can be combined, using &amp; to represent AND, | to represent OR, and rules can be grouped using (). For example, (rule1&amp;rule2&amp;rule3)|rule4, which means that 1, 2, and 3 must be achieved, or 4 is achieved, can pass the rule: ([#pp01#pp02#pp03].countCate(2) &amp; \$.countSPU(3) &amp; \$.count(5) &amp; \$.sum(10000)) | \$.sum(50000).
 6. Each rule consists of a calculation part and a rule discount part, connected by ->;
 7. The syntax of the discount part is:
    1. -1000 means a fixed discount of 10 yuan (so the calculation unit for money-related calculations is cents)
