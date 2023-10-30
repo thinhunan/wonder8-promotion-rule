@@ -1,6 +1,20 @@
-[中文说明](README_CN.md)
-#### overall
-As one of the most complex activities in the sales process, Marketing Promotion hasn't a good infrastructure to deal. So, the Wonder8.promotion engine comes.
+[中文说明](README.md)
+#### Overview
+In order to widely support complex and flexible marketing promotion activities, "Wonder8.promotion" engine uses specially designed expressive syntax to highly refine information, which can easily express the matching scope, requirements and discount methods between marketing promotion activities and user's selected item combinations. It can set the logical conjunction, grouping, priority of multiple promotion rules, and supports multiple strategies to calculate the optimal discounts for users.
+
+This engine has many detailed features, it is recommended to learn and use it in the following steps:
+
+1. First get familiar with the APIs through simple scenario needs. At this point you only need to use expressions (Rule), expression interpreter (Interpreter) and discount calculation strategies (Strategy). After most programmers grasp the expression syntax, they may feel Builder is troublesome and directly write expression strings, so Builder doesn't necessarily need to be familiar with. For example:
+
+  - Define rule: Buy 2 512G black or white iPhone15, discount $400; buy 3 discount $700:
+     - [#kiPhone15-black-512g#kiPhone15-white-512g].count(2)->-$40000 
+     - [#kiPhone15-black-512g#kiPhone15-white-512g].count(3)->-$70000
+    
+  - Then call Strategy.bestChoice(rules, items, MatchType.MultiRule) to calculate a $800 discount when user buys 4 iPhones, $1100 when buying 5, and calculate which items can be added to gain more discounts if there are remaining items after applying discounts.
+  
+2. Try to write complex rule combinations to get familiar with concepts like grouping, item bundling, multiple calculation strategies and scopes.
+
+3. Try to extend engine capabilities for your own business scenarios. This engine has clear structures with independent modules, often only a few lines of code need to be added to enable new capabilities.
 
 ##### Features:
 
