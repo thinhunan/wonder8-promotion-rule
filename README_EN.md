@@ -545,24 +545,15 @@ Different scenarios will have personalized needs. The source code has already im
 3. Use TicketSeatComparator to encapsulate logic to determine seat location relationships based on seat information
 
 ### Code structure
-｜- /java -- backend java implementation
-
-｜- /java/.../Builder.java -- fluent chained creation of various rules and components
-
-｜- /java/.../Interpreter.java -- string parser, parse rule string into model structure
-
-｜- /java/.../Strategy.java -- automatic calculation among multiple rules and items
-
-｜- /java/.../model -- model classes
-
-｜- /java/.../model/builder -- builders for creating rules in a structured way
-
-｜- /java/.../model/comparator -- comparators for sorting items
-
-｜- /java/.../model/strategy -- automatic calculation among multiple rules and items
-
-｜- /java/.../model/validate -- results for checking if items meet the rule
-
+｜- /java -- backend java implementation  
+｜- /java/.../Builder.java -- fluent chained creation of various rules and components  
+｜- /java/.../Interpreter.java -- string parser, parse rule string into model structure  
+｜- /java/.../Strategy.java -- automatic calculation among multiple rules and items  
+｜- /java/.../model -- model classes  
+｜- /java/.../model/builder -- builders for creating rules in a structured way  
+｜- /java/.../model/comparator -- comparators for sorting items  
+｜- /java/.../model/strategy -- automatic calculation among multiple rules and items  
+｜- /java/.../model/validate -- results for checking if items meet the rule  
 ｜- /js -- frontend javascript implementation, structures and functions are similar to java
 ### License
 [GPL](LICENSE.txt)

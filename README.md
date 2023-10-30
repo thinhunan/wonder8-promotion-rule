@@ -549,24 +549,15 @@ const P = Object.freeze({
 3. 用TicketSeatComparator封装根据座位信息判断不同座位位置关系的逻辑
 
 ### 代码结构
-｜- /java -- 后端实现，暂时不考虑翻译golang/.net语言版本，电商还是java多
-
-｜- /java/.../Builder.java -- 表达式构造器入口 !important
-
-｜- /java/.../Interpreter.java -- 表达式字符串解析器 !important
-
-｜- /java/.../Strategy.java -- 计算方法入口 !important
-
-｜- /java/.../model -- 规则结构化类体系
-
-｜- /java/.../model/builder -- 构造器的处理类
-
-｜- /java/.../model/comparator -- Item比较逻辑
-
-｜- /java/.../model/strategy -- 规则计算逻辑 !important
-
-｜- /java/.../model/validate -- 规则验证结果类
-
+｜- /java -- 后端实现，暂时不考虑翻译golang/.net语言版本，电商还是java多  
+｜- /java/.../Builder.java -- 表达式构造器入口 !important  
+｜- /java/.../Interpreter.java -- 表达式字符串解析器 !important  
+｜- /java/.../Strategy.java -- 计算方法入口 !important  
+｜- /java/.../model -- 规则结构化类体系  
+｜- /java/.../model/builder -- 构造器的处理类  
+｜- /java/.../model/comparator -- Item比较逻辑  
+｜- /java/.../model/strategy -- 规则计算逻辑 !important  
+｜- /java/.../model/validate -- 规则验证结果类  
 ｜- /js -- 前端javascript实现，代码结构与功能与后端完全一致，暂时不考虑翻译成typescript了
 ### License
 [GPL](LICENSE.CN.txt)
