@@ -4,9 +4,9 @@
 
 本引擎功能细节较多，建议用以下步骤来学习和应用：
 1. 先通过简单需求场景来熟悉API，此时只需要用到表达式(Rule)，表达式解释器(Interpreter)和优惠计算策略(Strategy)，大部分程序员掌握了表达式语法后，会嫌Builder麻烦而直接拼写表达式字符串，所以Builder都不一定要熟悉，比如：
--  定义规则：买两台512G的黑或白色iPhone15，折扣400元，三台折扣700元：
- [#kiPhone15-black-512g#kiPhone15-white-512g].count(2)->-40000
- [#kiPhone15-black-512g#kiPhone15-white-512g].count(3)->-70000
+- 定义规则：买两台512G的黑或白色iPhone15，折扣400元，三台折扣700元：
+    - [#kiPhone15-black-512g#kiPhone15-white-512g].count(2)->-40000
+    - [#kiPhone15-black-512g#kiPhone15-white-512g].count(3)->-70000
 - 然后调用Strategy.bestChoice(rules, items, MatchType.MultiRule)即可在用户购买4台iPhone时计算出折扣800元，购买5台时折扣1100元，以及计算出应用折扣后如果还有余出的物品，用户如何拼单获得更多的折扣。
 1. 尝试编写复杂的规则组合熟悉分组、商品组合、多种计算策略和计算范围等概念。
 2. 尝试为自己的业务场景扩展引擎功能，本引擎有清晰的结构，各部分相互独立，往往能添加10来行代码即扩展新的功能。
