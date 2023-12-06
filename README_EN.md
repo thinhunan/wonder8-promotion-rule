@@ -1,6 +1,6 @@
 [中文说明](README.md)
 #### Overview
-In order to widely support complex and flexible marketing promotion activities, "Wonder8.promotion" engine uses specially designed expressive syntax to highly abstract information, which can easily express the matching scope, requirements and discount methods between marketing promotion activities and user's selected item combinations. It can set the logical conjunction, grouping, priority of multiple promotion rules, and supports multiple strategies to calculate the optimal discounts for users.
+In order to widely support complex and flexible marketing promotion activities, "Wonder8.promotion" 🀎engine uses specially designed expressive syntax to highly abstract information, which can easily express the matching scope, requirements and discount methods between marketing promotion activities and user's selected item combinations. It can set the logical conjunction, grouping, priority of multiple promotion rules, and supports multiple strategies to calculate the optimal discounts for users.
 
 This engine has many detailed features, it is recommended to learn and use it in the following steps:
 1. First get familiar with the APIs through simple scenario needs. At this point you only need to use expressions (Rule), expression interpreter (Interpreter) and discount calculation strategies (Strategy). After most programmers grasp the expression syntax, they may feel Builder is troublesome and directly write expression strings, so Builder doesn't necessarily need to be familiar with. For example:
